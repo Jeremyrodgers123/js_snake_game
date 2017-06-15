@@ -17,8 +17,8 @@ h1{
 }
 
 .block{
-	width: 35px;
-	height: 35px;
+	width: 30px;
+	height: 30px;
 	border: 1px solid lightblue;
 	float: left;
 	text-align: center;
@@ -28,4 +28,8 @@ h1{
 	content: "";
 	display: table;
 	clear: both;
+}
+
+.food{
+	background-color: red;
 }
