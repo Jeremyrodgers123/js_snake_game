@@ -45,9 +45,24 @@ render(snake_grid);
 //define the snake
 var snake = {
   intialPosition: [20,20],
-  currentDirection: "r", /**Changed from initial direction w/o verification**/
-  currentPosition: [19,19],
-  currentLength: 1
+  currentDirection: "r",
+  currentPosition: [[19,19]]
+   /**,
+  
+  grow : function(tail_array){
+    if (snake.currentDirection === "l" || snake.currentDirection === "r"){
+      var movement = snake.currentDirection === "l" ? -1 : +1;
+      var array = snake.currentPosition[tail_array]
+      
+      x_axis = array[0]
+      y_axis = array[1]
+
+     
+    }else if(snake.currentDirection === "u" || "d"){
+      
+    }
+  }
+**/
 }
 var food = {
 
@@ -66,16 +81,21 @@ var food = {
     $x_place.css("background-color", "red")
   },
   isEaten        : function(){
-    console.log(snake.currentPosition);
-    console.log(food.currentPosition);
-    //figure out why snake.currentPosition and food.currentPostion aren't evaluating to the same thing.
-    if(snake.currentPosition[0] === food.currentPosition[0] && snake.currentPosition[1] === food.currentPosition[1]){
+    if(snake.currentPosition[0][0] === food.currentPosition[0] && snake.currentPosition[0][1] === food.currentPosition[1]){
       console.log("is Eaten if statement")
       this.randomNumber1 = this.randomNumGen();
       this.randomNumber2 = this.randomNumGen();
       food.place();
       food.currentPosition = []
       food.currentPosition.push(food.randomNumber1,food.randomNumber2)
+
+      return true;
+
+      //snake.grow(snakeTailArray)
+
+      
+      // pass tail position to access the last tail's end
+    
     }
   }
     
@@ -105,59 +125,89 @@ $(document).keydown(function(event){
 
 var move = {
   directions : function(){
-    console.log("move.directions")
-    console.log(snake.currentDirection)
+    //console.log("move.directions")
+    //console.log(snake.currentDirection)
     if (snake.currentDirection === "l" || snake.currentDirection === "r"){
+      //console.log("directions function")
       this.leftandright();
     }else if(snake.currentDirection === "u" || "d"){
       this.upanddown();
     }
   },
   upanddown : function(){
-    console.log("up and down selections")
-    var x_axis = snake.currentPosition[0]
-    var y_axis = snake.currentPosition[1]
+    //console.log("up and down selections")
+    var head_x_axis = snake.currentPosition[0][0]
+    var head_y_axis = snake.currentPosition[0][1]
+    var tail_array_index = snake.currentPosition.length -1
+    var tail_x_axis = snake.currentPosition[tail_array_index][0];
+    var tail_y_axis = snake.currentPosition[tail_array_index][1];
     if (snake.currentDirection === "u"){
       var movement = -1
     }else{
       var movement = +1 
     }
-    // remove block
-    move.removeBlock(x_axis,y_axis);
-    /**
-    $rows = $('.row').eq(y_axis)
-    $div = $rows.children()
-    $deletable_div = $div.eq(x_axis)
-    $deletable_div.replaceWith('<div class = "block"> </div>');
-    **/
+
     // move the snake one spot left
-    y_axis = y_axis + movement
-    snake.currentPosition[1] = y_axis
-    //check to see if the food is eaten
-    food.isEaten()
-    $rows = $('.row').eq(y_axis)
-    $div = $rows.children()
-    $div = $div.eq(x_axis)
-    $div.replaceWith('<div class = "block"> O </div>');
+    head_y_axis = head_y_axis + movement
+    
+
+    console.log("snake current position before unshift")
+    console.log(snake.currentPosition)
+    snake.currentPosition.unshift([head_x_axis, head_y_axis])
+    
+
+    console.log("snake current position after unshift")
+    console.log(snake.currentPosition)
+   
+
+     //check to see if the food is eaten
+     //food.isEaten()
+    if (food.isEaten()){
+      move.addBlock(head_x_axis,head_y_axis);
+      console.log('current position after add')
+      console.log(snake.currentPosition)
+    }else{
+    // remove block
+
+    move.removeBlock(tail_x_axis,tail_y_axis);
+    snake.currentPosition.pop()
+    move.addBlock(head_x_axis,head_y_axis);
+    console.log("snake current position")
+    console.log(snake.currentPosition)
+   }
+
+
+
+    
   },
   leftandright : function(){
     console.log("left and right selections")
-    var x_axis = snake.currentPosition[0]
-    var y_axis = snake.currentPosition[1]
+    var head_x_axis = snake.currentPosition[0][0];
+    var head_y_axis = snake.currentPosition[0][1];
+    var tail_array_index = snake.currentPosition.length -1
+    var tail_x_axis = snake.currentPosition[tail_array_index][0];
+    var tail_y_axis = snake.currentPosition[tail_array_index][1];
+
     var movement = snake.currentDirection === "l" ? -1 : +1;
-    $rows = $('.row').eq(y_axis)
-    console.log(x_axis)
-    $div = $rows.children()
-    //remove old position
-    $deletable_div = $div.eq(x_axis)
-    $deletable_div.replaceWith('<div class = "block"> </div>');
     // move the snake one spot left
-    x_axis = x_axis + movement
-    snake.currentPosition[0] = x_axis
+    head_x_axis = head_x_axis + movement
+     
+    console.log("snake current position before unshift")
+    console.log(snake.currentPosition)
+    snake.currentPosition.unshift([head_x_axis, head_y_axis])
+    
+
+    console.log("snake current position after unshift")
+    console.log(snake.currentPosition)
+   
     //check to see if the food is eaten
-    food.isEaten()
-    $div = $div.eq(x_axis)
-    $div.replaceWith('<div class = "block"> O </div>');
+    if (food.isEaten()){
+       move.addBlock(head_x_axis,head_y_axis);
+    }else{
+      move.removeBlock(tail_x_axis,tail_y_axis);
+      snake.currentPosition.pop()
+      move.addBlock(head_x_axis,head_y_axis);
+    }  
   },
   removeBlock: function(x_axis, y_axis){
     $rows = $('.row').eq(y_axis)
@@ -165,20 +215,28 @@ var move = {
     $deletable_div = $div.eq(x_axis)
     $deletable_div.replaceWith('<div class = "block"> </div>');
     return;
+  },
+
+  addBlock : function(x_axis, y_axis){
+    $rows = $('.row').eq(y_axis)
+    $div = $rows.children()
+    $div = $div.eq(x_axis)
+    $div.replaceWith('<div class = "block"> O </div>');
   }
 
 }
 var makeMove = function () {
+  console.log(snake.currentPosition[0])
   move.directions();
   offGrid();
 };
 
 var offGrid = function(){
   if(
-      (snake.currentPosition[0] < 40) && 
-      (snake.currentPosition[1] < 40) && 
-      (snake.currentPosition[0] >= 0) &&
-      (snake.currentPosition[1] >= 0)
+      (snake.currentPosition[0][0] < 40) && 
+      (snake.currentPosition[0][1] < 40) && 
+      (snake.currentPosition[0][0] >= 0) &&
+      (snake.currentPosition[0][1] >= 0)
       ){
     turn();
   }else{
@@ -187,9 +245,10 @@ var offGrid = function(){
 };
 
 var turn = function(){
-  setTimeout(makeMove, 750);
+  setTimeout(makeMove, 300);
 };
 //initial move
+
 console.log(food.currentPosition);
 
 console.log(food.randomNumber2);
@@ -198,75 +257,3 @@ turn();
 
     
 });
-
-/**
-function move () {
-
-  switch (snake.currentDirection) {
-    case 'l':
-      console.log("take er left");
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      //remove old position
-      $deletable_div = $div.eq(snake.currentPosition[0])
-      $deletable_div.replaceWith('<div class = "block"> </div>');
-      // move the snake one spot left
-      snake.currentPosition[0] = snake.currentPosition[0] - 1
-      $div = $div.eq(snake.currentPosition[0])
-      $div.replaceWith('<div class = "block"> O </div>');
-
-      break;
-    case 'u':
-      console.log("take er up");
-      //remove old position
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      $deletable_div = $div.eq(snake.currentPosition[0])
-      $deletable_div.replaceWith('<div class = "block"> </div>');
-      // move the snake one spot left
-      snake.currentPosition[1] = snake.currentPosition[1] - 1
-      
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      $div = $div.eq(snake.currentPosition[0])
-      $div.replaceWith('<div class = "block"> O </div>');
-      break;
-    case 'r':
-      console.log("take er right")
-
-      console.log("take er left");
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      //remove old position
-      $deletable_div = $div.eq(snake.currentPosition[0])
-      $deletable_div.replaceWith('<div class = "block"> </div>');
-      // move the snake one spot left
-      snake.currentPosition[0] = snake.currentPosition[0] + 1
-      $div = $div.eq(snake.currentPosition[0])
-      $div.replaceWith('<div class = "block"> O </div>');
-
-      break;
-    case 'd':
-      console.log("down she goes");
-
-      //remove old position
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      $deletable_div = $div.eq(snake.currentPosition[0])
-      $deletable_div.replaceWith('<div class = "block"> </div>');
-      // move the snake one spot left
-      snake.currentPosition[1] = snake.currentPosition[1] + 1
-      
-      $rows = $('.row').eq(snake.currentPosition[1])
-      $div = $rows.children()
-      $div = $div.eq(snake.currentPosition[0])
-      $div.replaceWith('<div class = "block"> O </div>');
-
-      break;
-    default:
-      console.log("damn it, what now")
-  }
-
-};
-**/
-
