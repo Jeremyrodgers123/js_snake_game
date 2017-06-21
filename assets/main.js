@@ -46,23 +46,24 @@ render(snake_grid);
 var snake = {
   intialPosition: [20,20],
   currentDirection: "r",
-  currentPosition: [[19,19]]
-   /**,
-  
-  grow : function(tail_array){
-    if (snake.currentDirection === "l" || snake.currentDirection === "r"){
-      var movement = snake.currentDirection === "l" ? -1 : +1;
-      var array = snake.currentPosition[tail_array]
-      
-      x_axis = array[0]
-      y_axis = array[1]
+  currentPosition: [[19,19]],
+  biteself : function(){
+  var size = snake.currentPosition.length
 
-     
-    }else if(snake.currentDirection === "u" || "d"){
-      
+    while (size > 1 ) {
+      var array = size - 1
+      var x_cordinate = snake.currentPosition[array][0]
+      var y_cordinate = snake.currentPosition[array][1]
+      if (snake.currentPosition[0][0]=== x_cordinate && snake.currentPosition[0][1] === y_cordinate) {
+        alert("game over")
+      // end game
+      snake.currentPosition[0][0] = 42
+      snake.currentPosition[0][1] = 42
+      offGrid()
+      }
+    size = size -1 
     }
   }
-**/
 }
 var food = {
 
@@ -89,13 +90,7 @@ var food = {
       food.currentPosition = []
       food.currentPosition.push(food.randomNumber1,food.randomNumber2)
 
-      return true;
-
-      //snake.grow(snakeTailArray)
-
-      
-      // pass tail position to access the last tail's end
-    
+      return true;   
     }
   }
     
@@ -229,6 +224,7 @@ var makeMove = function () {
   console.log(snake.currentPosition[0])
   move.directions();
   offGrid();
+  snake.biteself();
 };
 
 var offGrid = function(){

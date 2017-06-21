@@ -17,12 +17,13 @@ h1{
 }
 
 .block{
-	width: 30px;
-	height: 30px;
+	width: 15px;
+	height: 15px;
 	border: 1px solid lightblue;
 	float: left;
 	text-align: center;
-	padding-top: 7px;
+	padding-top: 1px;
+	font-size: 10px;
 }
 .clearfix{
 	content: "";
